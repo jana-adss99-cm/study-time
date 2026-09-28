@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F9F6FC">
+    <title>Study Workspace | Flow State</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <div id="toast" class="toast">Success!</div>
+
+    <div id="device-prompt" class="modal-overlay" style="z-index: 99999;">
+        <div class="modal-content fade-in-up" style="max-width: 500px;">
+            <h2 style="color: var(--text-main); margin-bottom: 10px;">Welcome to Workspace 🚀</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">How are you using this app today?</p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <div class="device-card bouncy-hover" onclick="selectDevice('mouse')">
+                    <div style="font-size: 50px; margin-bottom: 10px;">🖱️</div>
+                    <h3 style="color: var(--text-main);">Mouse (PC)</h3>
+                </div>
+                <div class="device-card bouncy-hover" onclick="selectDevice('touch')">
+                    <div style="font-size: 50px; margin-bottom: 10px;">👆</div>
+                    <h3 style="color: var(--text-main);">Touch (Mobile/Tablet)</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="glass-nav">
+        <div class="nav-buttons">
+            <button onclick="switchTab('view1')" id="btn-view1" class="active">Tasks</button>
+            <button onclick="switchTab('view2')" id="btn-view2">Calendar</button>
+            <button onclick="switchTab('view3')" id="btn-view3">Board</button>
+            <button onclick="switchTab('view4')" id="btn-view4">Stats</button>
+        </div>
+        <div style="display:flex; gap: 10px;">
+            <button onclick="resetDeviceChoice()" class="theme-btn" title="Change Device Mode">⚙️ Mode</button>
+            <button id="theme-toggle" onclick="toggleTheme()" class="theme-btn">Dark Mode</button>
+        </div>
+    </nav>
+
+    <div id="view1" class="view active">
+        <div class="form-container fade-in-up">
+            <h2 id="form-title">New Study Task</h2>
+            <div class="input-group">
+                <input type="text" id="task-name" placeholder="What do you need to study?">
+            </div>
+            <div class="input-group">
+                <select id="task-priority">
+                    <option value="urgent">Urgent</option>
+                    <option value="medium">Medium</option>
+                    <option value="normal">Normal</option>
+                </select>
+            </div>
+            <button onclick="saveTask()" id="save-btn" class="primary-btn">Save Task</button>
+        </div>
+    </div>
+
+    <div id="view2" class="view">
+        <div class="workspace-layout">
+            <div class="sidebar fade-in-up">
+                <div class="timers">
+                    <div class="timer-box">
+                        <h3>Study Timer</h3>
+                        <div class="timer-inputs">
+                            <input type="number" id="study-m" placeholder="Min" min="0">
+                            <span>:</span>
+                            <input type="number" id="study-s" placeholder="Sec" min="0" max="59">
+                        </div>
+                        <span id="study-display" class="timer-display">00:00</span>
+                        <div class="timer-controls">
+                            <button onclick="startTimer('study')">Start</button>
+                            <button onclick="stopTimer('study')">Stop</button>
+                        </div>
+                        <button class="btn-reset" onclick="resetTimer('study')">Reset</button>
+                    </div>
+                    
+                    <div class="timer-box break-timer">
+                        <h3>Break Timer</h3>
+                        <div class="timer-inputs">
+                            <input type="number" id="break-m" placeholder="Min" min="0">
+                            <span>:</span>
+                            <input type="number" id="break-s" placeholder="Sec" min="0" max="59">
+                        </div>
+                        <span id="break-display" class="timer-display">00:00</span>
+                        <div class="timer-controls">
+                            <button onclick="startTimer('break')">Start</button>
+                            <button onclick="stopTimer('break')">Stop</button>
+                        </div>
+                        <button class="btn-reset" onclick="resetTimer('break')">Reset</button>
+                    </div>
+                </div>
+
+                <div class="progress-section bouncy-hover">
+                    <h3>Weekly Progress</h3>
+                    <div class="circular-progress" id="progress-circle">
+                        <div class="inner-circle" id="progress-text">0%</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px;">Unassigned Tasks</h3>
+                <div class="task-list" id="saved-tasks"></div>
+            </div>
+
+            <div class="main-calendar fade-in-up" style="animation-delay: 0.1s;">
+                <div class="calendar-header">
+                    <h2>Study Calendar</h2>
+                </div>
+                <div class="calendar-grid">
+                    <div class="day-card" id="sunday"><div class="day-title">Sunday</div></div>
+                    <div class="day-card" id="monday"><div class="day-title">Monday</div></div>
+                    <div class="day-card" id="tuesday"><div class="day-title">Tuesday</div></div>
+                    <div class="day-card" id="wednesday"><div class="day-title">Wednesday</div></div>
+                    <div class="day-card" id="thursday"><div class="day-title">Thursday</div></div>
+                    <div class="day-card" id="friday"><div class="day-title">Friday</div></div>
+                    <div class="day-card" id="saturday"><div class="day-title">Saturday</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view3" class="view">
+        <div class="wb-header fade-in-up">
+            
+            <div class="board-tabs-strip">
+                <button id="tab-board-1" class="board-tab active" onclick="switchBoard(1)">Board 1</button>
+                <button id="tab-board-2" class="board-tab" onclick="switchBoard(2)">Board 2</button>
+                <button id="tab-board-3" class="board-tab" onclick="switchBoard(3)">Board 3</button>
+            </div>
+
+            <div class="toolbar-scroll-wrapper">
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <input type="color" id="color-picker" value="#B5A1D9" title="Choose Color">
+                        <div class="thickness-control">
+                            <input type="range" id="line-width" min="1" max="40" value="4">
+                        </div>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="tool-group">
+                        <button onclick="setTool('select')" id="tool-select">Select</button>
+                        <button onclick="setTool('pen')" id="tool-pen" class="active">Pen</button>
+                        <button onclick="setTool('gouache')" id="tool-gouache">Gouache</button>
+                        <button onclick="setTool('highlighter')" id="tool-highlighter">Highlight</button>
+                        <button onclick="setTool('eraser')" id="tool-eraser">Eraser</button>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="tool-group">
+                        <button onclick="setTool('line')" id="tool-line">Line</button>
+                        <button onclick="setTool('arrow')" id="tool-arrow">Arrow</button>
+                        <button onclick="setTool('rect')" id="tool-rect">Rect</button>
+                        <button onclick="setTool('circle')" id="tool-circle">Circle</button>
+                        <button onclick="setTool('triangle')" id="tool-triangle">Triangle</button>
+                        <button onclick="setTool('diamond')" id="tool-diamond">Diamond</button>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="tool-group">
+                        <button onclick="document.getElementById('image-upload').click()" class="action-btn">🖼️ Image</button>
+                        <input type="file" id="image-upload" accept="image/*" style="display:none;" onchange="insertImage(event)">
+                        
+                        <button onclick="addStickyNote()" class="action-btn">Add Note</button>
+                        <button onclick="saveBoardToGallery()" class="action-btn" style="background: var(--baby-blue-dark);">💾 Save</button>
+                        <button onclick="clearCanvas()" class="danger-btn">Clear</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stopwatch-inline bouncy-hover">
+                <span class="sw-label">Stopwatch</span>
+                <span id="stopwatch-display">00:00:00</span>
+                <div class="sw-controls">
+                    <button onclick="startStopwatch()">Start</button>
+                    <button onclick="stopStopwatch()">Stop</button>
+                    <button onclick="resetStopwatchMain()">Reset & Save</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container fade-in-up" id="canvas-container">
+            <canvas id="whiteboard"></canvas>
+            <div id="sticky-notes-container"></div>
+        </div>
+
+        <div class="board-gallery-container fade-in-up">
+            <div class="gallery-controls">
+                <h3 style="color: var(--text-main); margin: 0;">Saved Boards</h3>
+                <input type="text" id="gallery-search" placeholder="Search by date/time (e.g., 9/17)..." oninput="filterGallery(this.value)">
+            </div>
+            <div class="board-gallery" id="board-gallery"></div>
+        </div>
+    </div>
+
+    <div id="view4" class="view">
+        <div class="dashboard-header fade-in-up">
+            <h2>Your Study Dashboard</h2>
+            <p>Track your productivity, consistency, and keep going!</p>
+            
+            <div class="backup-controls" style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button onclick="openShareModal()" class="action-btn bouncy-hover" style="background: linear-gradient(45deg, #FF7675, #B76E79); color: white; padding: 10px 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">📸 Share Progress</button>
+                <button onclick="exportData()" class="action-btn bouncy-hover" style="background: var(--baby-blue-dark); color: white; padding: 10px 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">📥 Backup</button>
+                <label for="import-file" class="action-btn bouncy-hover" style="background: var(--lavender-dark); color: white; padding: 10px 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">📤 Restore</label>
+                <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)">
+            </div>
+        </div>
+        
+        <div class="stats-grid fade-in-up" style="animation-delay: 0.1s;">
+            <div class="stat-card bouncy-hover">
+                <h3>Total Study Time</h3>
+                <div class="stat-value" id="stat-time">0h 0m</div>
+            </div>
+            <div class="stat-card bouncy-hover">
+                <h3>Completed Tasks</h3>
+                <div class="stat-value" id="stat-tasks">0</div>
+            </div>
+            <div class="stat-card bouncy-hover">
+                <h3>Current Streak 🔥</h3>
+                <div class="stat-value" id="stat-streak">0 Days</div>
+            </div>
+        </div>
+
+        <div class="chart-container fade-in-up" style="animation-delay: 0.2s;">
+            <div class="chart-container-title-wrapper">
+                <h3>Weekly Focus Chart (Time Studied)</h3>
+            </div>
+            <div class="bar-chart" id="bar-chart">
+                <div class="bar-wrapper"><div class="bar" id="bar-0"></div><span>Sun</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-1"></div><span>Mon</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-2"></div><span>Tue</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-3"></div><span>Wed</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-4"></div><span>Thu</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-5"></div><span>Fri</span></div>
+                <div class="bar-wrapper"><div class="bar" id="bar-6"></div><span>Sat</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="share-modal" class="modal-overlay" style="display:none; z-index: 10000;">
+        <div class="modal-content fade-in-up" style="max-width: 480px; padding: 35px; background: var(--surface); border: 2px solid var(--border); position: relative; text-align: center;">
+            <span class="close-modal" onclick="closeShareModal()" title="Close">&times;</span>
+            
+            <h3 style="margin-bottom: 8px; color: var(--text-main); font-size: 24px; font-weight: 800;">Your Shareable Card</h3>
+            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 25px; font-weight: 600;">Designed specifically for Instagram Stories.</p>
+            
+            <div class="canvas-wrapper">
+                <canvas id="share-canvas"></canvas>
+            </div>
+            
+            <div class="share-actions" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="downloadShareImage()" class="primary-btn bouncy-hover" style="background: var(--lavender-dark); flex: 1; padding: 14px; font-size: 15px;">📥 Download Image</button>
+                <button onclick="nativeShareImage()" class="primary-btn bouncy-hover" style="background: var(--baby-blue-dark); flex: 1; padding: 14px; font-size: 15px;">🚀 Share Directly</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
